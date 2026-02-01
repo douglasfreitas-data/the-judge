@@ -1,0 +1,25 @@
+# The Judge - Python Dependencies
+
+# Core
+python-dotenv>=1.0.0
+supabase>=2.0.0
+
+# ML / Embeddings
+torch>=2.0.0
+open-clip-torch>=2.24.0
+transformers>=4.35.0
+pillow>=10.0.0
+numpy>=1.24.0
+
+# API
+fastapi>=0.109.0
+uvicorn>=0.27.0
+pydantic>=2.5.0
+
+# Fuzzy Matching
+fuzzywuzzy>=0.18.0
+python-Levenshtein>=0.23.0
+
+# Utilities
+requests>=2.31.0
+httpx>=0.26.0

@@ -281,11 +281,25 @@ ALTER TABLE targets ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Viewers can view own profile" ON viewers
     FOR SELECT USING (auth.uid()::text = id::text);
 
+CREATE POLICY "Viewers can update own profile" ON viewers
+    FOR UPDATE USING (auth.uid()::text = id::text);
+
+CREATE POLICY "Viewers can insert own profile" ON viewers
+    FOR INSERT WITH CHECK (auth.uid()::text = id::text);
+
+-- Stats: Apenas leitura para o viewer (atualizado via triggers/funções)
 CREATE POLICY "Viewers can view own stats" ON viewer_stats
     FOR SELECT USING (auth.uid()::text = viewer_id::text);
 
+-- Sessions: CRUD completo para o dono
 CREATE POLICY "Viewers can view own sessions" ON sessions
     FOR SELECT USING (auth.uid()::text = viewer_id::text);
+
+CREATE POLICY "Viewers can insert own sessions" ON sessions
+    FOR INSERT WITH CHECK (auth.uid()::text = viewer_id::text);
+
+CREATE POLICY "Viewers can update own sessions" ON sessions
+    FOR UPDATE USING (auth.uid()::text = viewer_id::text);
 
 -- Política: Todos podem ver eventos e alvos ativos
 CREATE POLICY "Anyone can view active events" ON events
@@ -293,6 +307,12 @@ CREATE POLICY "Anyone can view active events" ON events
 
 CREATE POLICY "Anyone can view active targets" ON targets
     FOR SELECT USING (is_active = true);
+
+-- Política: Permitir inserção de targets por usuários autenticados (para testes/MVP)
+-- Em produção, removeríamos isso e usaríamos apenas Service Role
+CREATE POLICY "Authenticated users can insert targets" ON targets
+    FOR INSERT TO authenticated WITH CHECK (true);
+
 
 -- ============================================
 -- 10. TRIGGERS
