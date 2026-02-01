@@ -71,6 +71,13 @@
 - [ ] Inserir primeiros dados de teste (Automático via script)
 - [ ] Implementar core de embeddings (CLIP)
 
+> **📌 META PARA PRÓXIMA SESSÃO:**
+> Começar imediatamente pela **Implementação do Core de Embeddings**.
+> 1. Criar `src/core/embeddings.py`
+> 2. Implementar classe `CLIPEncoder`
+> 3. Integrar com FastAPI básico
+
+
 ---
 
 ## Template para novas entradas
