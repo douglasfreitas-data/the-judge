@@ -77,18 +77,48 @@ O **Institute of Noetic Sciences** está criando uma base especificamente para A
 
 Para garantir alvos verdadeiramente distintos, cada imagem deve ser avaliada em **múltiplas dimensões**:
 
+#### Dimensões Físicas
 | Dimensão | Escala | Exemplos de Opostos |
 |----------|--------|---------------------|
 | **Escala** | Minúsculo ↔ Gigante | Formiga vs. Montanha |
 | **Forma** | Orgânico ↔ Geométrico | Nuvem vs. Cubo de Rubik |
-| **Cor Dominante** | Cores quentes ↔ Cores frias | Vulcão vs. Iceberg |
-| **Brilho** | Escuro ↔ Claro | Caverna vs. Praia ensolarada |
-| **Textura** | Liso ↔ Rugoso | Espelho vs. Casca de árvore |
-| **Movimento** | Estático ↔ Dinâmico | Pedra vs. Cachoeira |
+| **Orientação** | Horizontal ↔ Vertical | Horizon no mar vs. Arranha-céu |
+| **Profundidade** | Superfície ↔ Profundo | Praia vs. Fundo do oceano |
+| **Altitude** | Subterrâneo ↔ Espacial | Caverna vs. Estação espacial |
 | **Densidade** | Vazio ↔ Cheio | Deserto vs. Floresta densa |
-| **Emoção** | Calma ↔ Intensidade | Lago sereno vs. Tempestade |
-| **Orientação** | Horizontal ↔ Vertical | Horizon vs. Arranha-céu |
-| **Natureza** | Natural ↔ Artificial | Floresta vs. Circuito eletrônico |
+| **Textura** | Liso ↔ Rugoso | Espelho vs. Coral |
+
+#### Dimensões Cromáticas
+| Dimensão | Escala | Exemplos de Opostos |
+|----------|--------|---------------------|
+| **Cor Dominante** | Cores quentes ↔ Cores frias | Vulcão vs. Iceberg |
+| **Brilho** | Escuro ↔ Claro | Caverna vs. Deserto branco |
+| **Saturação** | Monocromático ↔ Multicolorido | Lobo cinza vs. Arara |
+| **Contraste** | Suave ↔ Alto contraste | Neblina vs. Zebra |
+
+#### Dimensões Temporais/Contextuais
+| Dimensão | Escala | Exemplos de Opostos |
+|----------|--------|---------------------|
+| **Época** | Antigo ↔ Futurista | Pirâmides vs. Estação espacial |
+| **Movimento** | Estático ↔ Dinâmico | Estátua vs. Cachoeira |
+| **Velocidade** | Lento ↔ Rápido | Tartaruga vs. Relâmpago |
+| **Natural/Artificial** | Natural ↔ Construído | Floresta vs. Circuito eletrônico |
+
+#### Dimensões Emocionais
+| Dimensão | Escala | Exemplos de Opostos |
+|----------|--------|---------------------|
+| **Emoção** | Calma ↔ Intensidade | Lago sereno vs. Erupção vulcânica |
+| **Perigo** | Seguro ↔ Perigoso | Bebê dormindo vs. Tubarão |
+| **Mistério** | Comum ↔ Misterioso | Maçã vs. Pirâmides do Egito |
+| **Escala Humana** | Íntimo ↔ Cósmico | Close de olho vs. Galáxia |
+
+#### Dimensões Ambientais
+| Dimensão | Escala | Exemplos de Opostos |
+|----------|--------|---------------------|
+| **Elemento** | Terra ↔ Água ↔ Ar ↔ Fogo | Montanha vs. Oceano vs. Nuvem vs. Vulcão |
+| **Temperatura** | Gélido ↔ Escaldante | Antártica vs. Deserto do Saara |
+| **Umidade** | Seco ↔ Molhado | Deserto vs. Cascata |
+| **Bioma** | Ártico ↔ Tropical | Urso polar vs. Tucano |
 
 ### 3.2 Exemplos de Pares BONS (Alta Ortogonalidade)
 
@@ -185,7 +215,69 @@ Imagens que funcionam melhor na ARV têm **alta numinosidade** (impacto emociona
 | Astronauta no espaço | Pessoa andando |
 | Relâmpago atingindo torre | Chuva comum |
 
-### 3.6 Perfil de Imagem (Schema Atualizado)
+### 3.6 Catálogo de Landmarks e Locais Icônicos
+
+#### 🏛️ Monumentos Históricos
+| Local | Características Marcantes | Bom par com... |
+|-------|---------------------------|----------------|
+| **Pirâmides do Egito** | Triangular, areia, antigo, misterioso, deserto | Submarino, floresta tropical |
+| **Coliseu Romano** | Circular, ruínas, arcos, história | Foguete espacial, iceberg |
+| **Muralha da China** | Longo, horizontal, montanhas, serpenteia | Formiga, gota d'água |
+| **Stonehenge** | Pedras, circular, místico, verde | Cidade futurista, vulcão |
+| **Machu Picchu** | Montanha, ruínas, nuvens, verde | Fundo do mar, deserto |
+
+#### 🗽 Marcos Arquitetônicos
+| Local | Características Marcantes | Bom par com... |
+|-------|---------------------------|----------------|
+| **Torre Eiffel** | Metal, triangular, noite/luzes, Paris | Tartaruga, caverna |
+| **Cristo Redentor** | Braços abertos, branco, montanha, Rio | Tubarão, labirinto |
+| **Estátua da Liberdade** | Verde, tocha, vertical, mar | Vulcão, microscópio |
+| **Big Ben** | Relógio, vertical, Londres, clássico | Medusa, aurora boreal |
+| **Taj Mahal** | Branco, simétrico, cúpulas, reflexo | Tempestade, formigueiro |
+| **Burj Khalifa** | Altíssimo, moderno, vidro, deserto | Cogumelo, poça d'água |
+
+#### 🌍 Maravilhas Naturais
+| Local | Características Marcantes | Bom par com... |
+|-------|---------------------------|----------------|
+| **Grand Canyon** | Vermelho, profundo, camadas, imenso | Floco de neve, relógio |
+| **Cataratas do Niágara** | Água, força, névoa, barcos | Deserto do Saara, estátua |
+| **Monte Everest** | Neve, pico, nuvens, extremo | Fundo do oceano, microchip |
+| **Aurora Boreal** | Cores, céu noturno, mágico, frio | Fogueira, deserto |
+| **Grande Barreira de Coral** | Colorido, água, peixes, vida | Lua, ruínas antigas |
+| **Vulcão em Erupção** | Fogo, lava, vermelho, caos | Pinguim, biblioteca |
+
+#### 🚀 Locais Extremos
+| Local | Características Marcantes | Bom par com... |
+|-------|---------------------------|----------------|
+| **Estação Espacial Internacional** | Metal, órbita, tecnologia, vazio negro | Floresta, bebê |
+| **Fundo do Oceano/Abismo** | Escuro, criaturas bizarras, pressão | Sol, avião |
+| **Antártica** | Branco, gelo, pinguins, vazio | Selva amazônica, fogo |
+| **Deserto do Saara** | Areia, quente, dunas, vazio | Aquário, floresta |
+| **Caverna Gigante** | Escuro, estalactites, água, eco | Praia ensolarada, pássaro |
+| **Cratera de Vulcão** | Circular, profundo, fumegante | Nuvem fofa, jardim |
+
+#### 🔬 Micro e Macro Cosmos
+| Local | Características Marcantes | Bom par com... |
+|-------|---------------------------|----------------|
+| **Galáxia (Hubble)** | Espiral, estrelas, imenso, cores | Formiga, célula |
+| **Nebulosa** | Colorido, gás, nascimento de estrelas | Gota de orvalho, chave |
+| **Célula (microscópio)** | Circular, pequeno, estruturas | Galáxia, montanha |
+| **DNA (modelo)** | Helicoidal, colorido, vida | Deserto, relâmpago |
+| **Floco de Neve (macro)** | Cristalino, simétrico, delicado | Erupção solar, elefante |
+
+### 3.7 Tabela de Compatibilidade (Referência Rápida)
+
+| 🔴 Quente/Fogo | 🔵 Frio/Água | 🟢 Vida/Natureza | 🟡 Construído | ⚫ Espaço/Tech |
+|----------------|--------------|------------------|---------------|----------------|
+| Vulcão | Iceberg | Floresta | Pirâmides | Estação Espacial |
+| Deserto Saara | Antártica | Amazonas | Torre Eiffel | Galáxia |
+| Fogueira | Fundo do mar | Coral | Cristo Redentor | Nebulosa |
+| Sol | Aurora Boreal | Tigre | Burj Khalifa | Satélite |
+| Lava | Cascata | Borboleta | Coliseu | Circuito |
+
+**Regra de ouro:** Escolher um de cada coluna quase sempre garante alta ortogonalidade!
+
+### 3.8 Perfil de Imagem (Schema Atualizado)
 
 ```json
 {
@@ -211,7 +303,7 @@ Imagens que funcionam melhor na ARV têm **alta numinosidade** (impacto emociona
 }
 ```
 
-### 3.7 Algoritmo de Ortogonalidade Multidimensional
+### 3.9 Algoritmo de Ortogonalidade Multidimensional
 
 ```python
 def calculate_multidimensional_orthogonality(img_a: dict, img_b: dict) -> float:
