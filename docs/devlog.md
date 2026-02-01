@@ -42,9 +42,32 @@
 - Sistema de scoring por visualizador com pesos dinâmicos
 
 ### Próximos passos
-- [ ] Configurar Supabase
-- [ ] Criar primeiro ADR completo
+- [x] Configurar Supabase
+- [x] Criar schema do banco de dados
+- [ ] Testar conexão Python → Supabase
 - [ ] Iniciar implementação do MVP (Fase 1)
+
+---
+
+## 2026-02-01 - Sessão 3: Banco de Dados Supabase
+
+### O que foi feito
+- ✅ Configurado projeto no Supabase
+- ✅ Criado schema completo do banco (`database/schema.sql`)
+- ✅ Extensão pgvector ativada para embeddings
+- ✅ Tabelas criadas: viewers, viewer_stats, target_categories, targets, events, sessions
+- ✅ Funções SQL: `calculate_orthogonality()`, `find_best_target_pair()`
+- ✅ Indexes IVFFlat para busca vetorial rápida
+- ✅ Row Level Security (RLS) configurado
+
+### Decisões tomadas
+- ADR-003: Supabase como backend unificado
+- ADR-004: pgvector para armazenamento de embeddings
+
+### Próximos passos
+- [ ] Criar script Python para testar conexão
+- [ ] Inserir primeiros dados de teste
+- [ ] Implementar core de embeddings (CLIP)
 
 ---
 
