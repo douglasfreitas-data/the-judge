@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Model files (large)
+*.pt
+*.pth
+*.onnx
+*.pkl
+models/weights/
+
+# Data
+data/raw/
+data/processed/
+*.csv
+!data/examples/*.csv
+
+# Jupyter
+.ipynb_checkpoints/
