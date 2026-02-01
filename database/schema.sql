@@ -1,60 +1,59 @@
 -- ============================================
 -- THE JUDGE - Database Schema
--- Supabase PostgreSQL
+-- Supabase PostgreSQL (Idempotent Version)
 -- ============================================
+
+-- Reset parcial (opcional - descomente se quiser limpar tudo)
+-- DROP TABLE IF EXISTS sessions CASCADE;
+-- DROP TABLE IF EXISTS events CASCADE;
+-- DROP TABLE IF EXISTS targets CASCADE;
+-- DROP TABLE IF EXISTS target_categories CASCADE;
+-- DROP TABLE IF EXISTS viewer_stats CASCADE;
+-- DROP TABLE IF EXISTS viewers CASCADE;
 
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS vector;  -- pgvector for embeddings
+CREATE EXTENSION IF NOT EXISTS vector;
 
 -- ============================================
--- 1. VIEWERS - Perfil dos visualizadores
+-- 1. VIEWERS
 -- ============================================
-CREATE TABLE viewers (
+CREATE TABLE IF NOT EXISTS viewers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE,
-    
-    -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- ============================================
--- 2. VIEWER_STATS - Métricas agregadas
+-- 2. VIEWER_STATS
 -- ============================================
-CREATE TABLE viewer_stats (
+CREATE TABLE IF NOT EXISTS viewer_stats (
     viewer_id UUID PRIMARY KEY REFERENCES viewers(id) ON DELETE CASCADE,
-    
-    -- Métricas de performance
     total_sessions INT DEFAULT 0,
-    hit_rate FLOAT DEFAULT 0,           -- Acertos / Total
-    displacement_rate FLOAT DEFAULT 0,   -- Taxa de "acerto invertido"
-    calibration_score FLOAT DEFAULT 0,   -- Correlação confiança vs acerto
-    
-    -- Especialidades por categoria
-    specialty_scores JSONB DEFAULT '{}', -- {"nature": 0.8, "urban": 0.5, ...}
-    
-    -- Momentum
+    hit_rate FLOAT DEFAULT 0,
+    displacement_rate FLOAT DEFAULT 0,
+    calibration_score FLOAT DEFAULT 0,
+    specialty_scores JSONB DEFAULT '{}',
     current_streak INT DEFAULT 0,
     weight_multiplier FLOAT DEFAULT 1.0,
-    
-    -- Timestamps
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- ============================================
--- 3. TARGET_CATEGORIES - Categorias de alvos
+-- 3. TARGET_CATEGORIES
 -- ============================================
-CREATE TABLE target_categories (
+CREATE TABLE IF NOT EXISTS target_categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
     description TEXT,
-    color VARCHAR(7)  -- Hex color para UI
+    color VARCHAR(7)
 );
 
--- Inserir categorias iniciais
-INSERT INTO target_categories (name, description, color) VALUES
+-- Inserir categorias apenas se não existirem
+INSERT INTO target_categories (name, description, color)
+VALUES
     ('nature', 'Paisagens naturais, montanhas, florestas', '#22c55e'),
     ('urban', 'Cidades, prédios, infraestrutura', '#6b7280'),
     ('water', 'Oceanos, rios, cachoeiras', '#3b82f6'),
@@ -64,156 +63,112 @@ INSERT INTO target_categories (name, description, color) VALUES
     ('landmarks', 'Lugares famosos e icônicos', '#8b5cf6'),
     ('space', 'Espaço, galáxias, planetas', '#1f2937'),
     ('micro', 'Microscópico, células, insetos', '#14b8a6'),
-    ('abstract', 'Arte abstrata, padrões, texturas', '#f97316');
+    ('abstract', 'Arte abstrata, padrões, texturas', '#f97316')
+ON CONFLICT (name) DO NOTHING;
 
 -- ============================================
--- 4. TARGETS - Pool de imagens-alvo
+-- 4. TARGETS
 -- ============================================
-CREATE TABLE targets (
+CREATE TABLE IF NOT EXISTS targets (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     category_id INT REFERENCES target_categories(id),
-    
-    -- Origem da imagem
-    source VARCHAR(50) NOT NULL,        -- 'unsplash', 'pexels', 'custom'
-    source_id VARCHAR(255),              -- ID na fonte original
-    source_url TEXT,                     -- URL original
-    
-    -- Armazenamento
+    source VARCHAR(50) NOT NULL,
+    source_id VARCHAR(255),
+    source_url TEXT,
     file_path VARCHAR(500),
     thumbnail_path VARCHAR(500),
-    storage_url TEXT,                    -- Supabase Storage URL
-    
-    -- Metadados visuais básicos
+    storage_url TEXT,
     dominant_color VARCHAR(7),
-    brightness FLOAT,                    -- 0-1
-    
-    -- Dimensões de ortogonalidade (0-1 cada)
+    brightness FLOAT,
     dimensions JSONB DEFAULT '{
-        "scale": 0.5,
-        "organic_vs_geometric": 0.5,
-        "warm_vs_cold": 0.5,
-        "static_vs_dynamic": 0.5,
-        "empty_vs_dense": 0.5,
-        "calm_vs_intense": 0.5,
-        "horizontal_vs_vertical": 0.5,
-        "natural_vs_artificial": 0.5,
-        "light_vs_dark": 0.5,
-        "smooth_vs_textured": 0.5,
-        "ancient_vs_modern": 0.5,
-        "safe_vs_dangerous": 0.5,
-        "surface_vs_deep": 0.5,
-        "earth_vs_space": 0.5
+        "scale": 0.5, "organic_vs_geometric": 0.5, "warm_vs_cold": 0.5,
+        "static_vs_dynamic": 0.5, "empty_vs_dense": 0.5, "calm_vs_intense": 0.5,
+        "horizontal_vs_vertical": 0.5, "natural_vs_artificial": 0.5, "light_vs_dark": 0.5,
+        "smooth_vs_textured": 0.5, "ancient_vs_modern": 0.5, "safe_vs_dangerous": 0.5,
+        "surface_vs_deep": 0.5, "earth_vs_space": 0.5
     }',
-    
-    -- Numinosidade (impacto emocional)
     numinosity FLOAT DEFAULT 0.5,
-    
-    -- Embedding CLIP (512 dimensões)
     embedding vector(512),
-    
-    -- Controle de uso
     times_used INT DEFAULT 0,
     last_used_at TIMESTAMP WITH TIME ZONE,
     is_active BOOLEAN DEFAULT true,
-    
-    -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- ============================================
--- 5. EVENTS - Eventos de predição
+-- 5. EVENTS
 -- ============================================
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    
-    -- Descrição do evento
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    
-    -- Alvos do evento
     target_a_id UUID REFERENCES targets(id),
     target_b_id UUID REFERENCES targets(id),
     orthogonality_score FLOAT,
-    
-    -- Resultado
-    result CHAR(1) CHECK (result IN ('A', 'B')),  -- NULL até feedback
+    result CHAR(1) CHECK (result IN ('A', 'B')),
     result_confirmed_at TIMESTAMP WITH TIME ZONE,
-    
-    -- Controle
     deadline TIMESTAMP WITH TIME ZONE,
     is_active BOOLEAN DEFAULT true,
-    
-    -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- ============================================
--- 6. SESSIONS - Sessões de visualização
+-- 6. SESSIONS
 -- ============================================
-CREATE TABLE sessions (
+CREATE TABLE IF NOT EXISTS sessions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     viewer_id UUID REFERENCES viewers(id) ON DELETE CASCADE,
     event_id UUID REFERENCES events(id) ON DELETE CASCADE,
-    
-    -- Input do visualizador
     text_input TEXT,
-    keywords TEXT[],                     -- Palavras-chave extraídas
-    sketch_storage_url TEXT,             -- URL do esboço no Storage
-    
-    -- Embeddings
+    keywords TEXT[],
+    sketch_storage_url TEXT,
     text_embedding vector(512),
     sketch_embedding vector(512),
     combined_embedding vector(512),
-    
-    -- Scores calculados
     score_target_a FLOAT,
     score_target_b FLOAT,
-    
-    -- Predição
     prediction CHAR(1) CHECK (prediction IN ('A', 'B')),
-    confidence FLOAT,                    -- 0-1
-    
-    -- Resultado (após feedback)
-    is_correct BOOLEAN,                  -- NULL até feedback
-    is_displacement BOOLEAN,             -- Acertou o alvo errado?
-    
-    -- Timestamps
+    confidence FLOAT,
+    is_correct BOOLEAN,
+    is_displacement BOOLEAN,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- ============================================
--- 7. INDEXES para performance
+-- 7. INDEXES (Idempotent: DROP IF EXISTS first)
 -- ============================================
 
--- Busca por embedding (similaridade de vetor)
+DROP INDEX IF EXISTS idx_targets_embedding;
 CREATE INDEX idx_targets_embedding ON targets 
     USING ivfflat (embedding vector_cosine_ops) 
     WITH (lists = 100);
 
+DROP INDEX IF EXISTS idx_sessions_text_embedding;
 CREATE INDEX idx_sessions_text_embedding ON sessions 
     USING ivfflat (text_embedding vector_cosine_ops) 
     WITH (lists = 100);
 
--- Busca por categoria e status
+DROP INDEX IF EXISTS idx_targets_category;
 CREATE INDEX idx_targets_category ON targets(category_id);
+
+DROP INDEX IF EXISTS idx_targets_active;
 CREATE INDEX idx_targets_active ON targets(is_active) WHERE is_active = true;
 
--- Busca por viewer
+DROP INDEX IF EXISTS idx_sessions_viewer;
 CREATE INDEX idx_sessions_viewer ON sessions(viewer_id);
+
+DROP INDEX IF EXISTS idx_sessions_event;
 CREATE INDEX idx_sessions_event ON sessions(event_id);
 
 -- ============================================
--- 8. FUNCTIONS - Funções úteis
+-- 8. FUNCTIONS (CREATE OR REPLACE is idempotent)
 -- ============================================
 
--- Função para calcular ortogonalidade multidimensional
-CREATE OR REPLACE FUNCTION calculate_orthogonality(
-    dims_a JSONB, 
-    dims_b JSONB
-) RETURNS FLOAT AS $$
+CREATE OR REPLACE FUNCTION calculate_orthogonality(dims_a JSONB, dims_b JSONB) 
+RETURNS FLOAT AS $$
 DECLARE
     dim_keys TEXT[] := ARRAY[
         'scale', 'organic_vs_geometric', 'warm_vs_cold', 
@@ -231,38 +186,23 @@ BEGIN
             COALESCE((dims_b->>key)::FLOAT, 0.5)
         );
     END LOOP;
-    
     RETURN total_diff / array_length(dim_keys, 1);
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
--- Função para encontrar o melhor par de alvos
-CREATE OR REPLACE FUNCTION find_best_target_pair(
-    min_orthogonality FLOAT DEFAULT 0.6,
-    exclude_recent_days INT DEFAULT 7
-) RETURNS TABLE(
-    target_a_id UUID,
-    target_b_id UUID,
-    orthogonality FLOAT
-) AS $$
+CREATE OR REPLACE FUNCTION find_best_target_pair(min_orthogonality FLOAT DEFAULT 0.6, exclude_recent_days INT DEFAULT 7) 
+RETURNS TABLE(target_a_id UUID, target_b_id UUID, orthogonality FLOAT) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
-        t1.id as target_a_id,
-        t2.id as target_b_id,
-        calculate_orthogonality(t1.dimensions, t2.dimensions) as orthogonality
-    FROM targets t1
-    CROSS JOIN targets t2
-    WHERE t1.id < t2.id  -- Evitar duplicatas
-      AND t1.is_active = true
-      AND t2.is_active = true
-      AND t1.category_id != t2.category_id  -- Categorias diferentes
+    SELECT t1.id, t2.id, calculate_orthogonality(t1.dimensions, t2.dimensions) as ortho
+    FROM targets t1 CROSS JOIN targets t2
+    WHERE t1.id < t2.id 
+      AND t1.is_active = true AND t2.is_active = true
+      AND t1.category_id != t2.category_id
       AND (t1.last_used_at IS NULL OR t1.last_used_at < NOW() - (exclude_recent_days || ' days')::INTERVAL)
       AND (t2.last_used_at IS NULL OR t2.last_used_at < NOW() - (exclude_recent_days || ' days')::INTERVAL)
       AND calculate_orthogonality(t1.dimensions, t2.dimensions) >= min_orthogonality
-    ORDER BY 
-        calculate_orthogonality(t1.dimensions, t2.dimensions) DESC,
-        (t1.numinosity + t2.numinosity) DESC
+    ORDER BY ortho DESC, (t1.numinosity + t2.numinosity) DESC
     LIMIT 10;
 END;
 $$ LANGUAGE plpgsql;
@@ -277,68 +217,63 @@ ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE targets ENABLE ROW LEVEL SECURITY;
 
--- Política: Viewers podem ver apenas seus próprios dados
-CREATE POLICY "Viewers can view own profile" ON viewers
-    FOR SELECT USING (auth.uid()::text = id::text);
+-- Helper para dropar policies se existirem (Postgres não tem CREATE POLICY IF NOT EXISTS nativo fácil)
+DO $$ 
+BEGIN
+    -- Viewers
+    DROP POLICY IF EXISTS "Viewers can view own profile" ON viewers;
+    DROP POLICY IF EXISTS "Viewers can update own profile" ON viewers;
+    DROP POLICY IF EXISTS "Viewers can insert own profile" ON viewers;
+    
+    -- Stats
+    DROP POLICY IF EXISTS "Viewers can view own stats" ON viewer_stats;
+    
+    -- Sessions
+    DROP POLICY IF EXISTS "Viewers can view own sessions" ON sessions;
+    DROP POLICY IF EXISTS "Viewers can insert own sessions" ON sessions;
+    DROP POLICY IF EXISTS "Viewers can update own sessions" ON sessions;
+    
+    -- Public
+    DROP POLICY IF EXISTS "Anyone can view active events" ON events;
+    DROP POLICY IF EXISTS "Anyone can view active targets" ON targets;
+    DROP POLICY IF EXISTS "Authenticated users can insert targets" ON targets;
+END $$;
 
-CREATE POLICY "Viewers can update own profile" ON viewers
-    FOR UPDATE USING (auth.uid()::text = id::text);
+-- Recriar policies
+CREATE POLICY "Viewers can view own profile" ON viewers FOR SELECT USING (auth.uid()::text = id::text);
+CREATE POLICY "Viewers can update own profile" ON viewers FOR UPDATE USING (auth.uid()::text = id::text);
+CREATE POLICY "Viewers can insert own profile" ON viewers FOR INSERT WITH CHECK (auth.uid()::text = id::text);
 
-CREATE POLICY "Viewers can insert own profile" ON viewers
-    FOR INSERT WITH CHECK (auth.uid()::text = id::text);
+CREATE POLICY "Viewers can view own stats" ON viewer_stats FOR SELECT USING (auth.uid()::text = viewer_id::text);
 
--- Stats: Apenas leitura para o viewer (atualizado via triggers/funções)
-CREATE POLICY "Viewers can view own stats" ON viewer_stats
-    FOR SELECT USING (auth.uid()::text = viewer_id::text);
+CREATE POLICY "Viewers can view own sessions" ON sessions FOR SELECT USING (auth.uid()::text = viewer_id::text);
+CREATE POLICY "Viewers can insert own sessions" ON sessions FOR INSERT WITH CHECK (auth.uid()::text = viewer_id::text);
+CREATE POLICY "Viewers can update own sessions" ON sessions FOR UPDATE USING (auth.uid()::text = viewer_id::text);
 
--- Sessions: CRUD completo para o dono
-CREATE POLICY "Viewers can view own sessions" ON sessions
-    FOR SELECT USING (auth.uid()::text = viewer_id::text);
-
-CREATE POLICY "Viewers can insert own sessions" ON sessions
-    FOR INSERT WITH CHECK (auth.uid()::text = viewer_id::text);
-
-CREATE POLICY "Viewers can update own sessions" ON sessions
-    FOR UPDATE USING (auth.uid()::text = viewer_id::text);
-
--- Política: Todos podem ver eventos e alvos ativos
-CREATE POLICY "Anyone can view active events" ON events
-    FOR SELECT USING (is_active = true);
-
-CREATE POLICY "Anyone can view active targets" ON targets
-    FOR SELECT USING (is_active = true);
-
--- Política: Permitir inserção de targets por usuários autenticados (para testes/MVP)
--- Em produção, removeríamos isso e usaríamos apenas Service Role
-CREATE POLICY "Authenticated users can insert targets" ON targets
-    FOR INSERT TO authenticated WITH CHECK (true);
-
+CREATE POLICY "Anyone can view active events" ON events FOR SELECT USING (is_active = true);
+CREATE POLICY "Anyone can view active targets" ON targets FOR SELECT USING (is_active = true);
+CREATE POLICY "Authenticated users can insert targets" ON targets FOR INSERT TO authenticated WITH CHECK (true);
 
 -- ============================================
 -- 10. TRIGGERS
 -- ============================================
 
--- Trigger para atualizar updated_at
-CREATE OR REPLACE FUNCTION update_updated_at()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_viewers_updated_at
-    BEFORE UPDATE ON viewers
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+-- Dropar triggers antes de recriar
+DROP TRIGGER IF EXISTS update_viewers_updated_at ON viewers;
+CREATE TRIGGER update_viewers_updated_at BEFORE UPDATE ON viewers FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE TRIGGER update_targets_updated_at
-    BEFORE UPDATE ON targets
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DROP TRIGGER IF EXISTS update_targets_updated_at ON targets;
+CREATE TRIGGER update_targets_updated_at BEFORE UPDATE ON targets FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE TRIGGER update_events_updated_at
-    BEFORE UPDATE ON events
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DROP TRIGGER IF EXISTS update_events_updated_at ON events;
+CREATE TRIGGER update_events_updated_at BEFORE UPDATE ON events FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE TRIGGER update_sessions_updated_at
-    BEFORE UPDATE ON sessions
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DROP TRIGGER IF EXISTS update_sessions_updated_at ON sessions;
+CREATE TRIGGER update_sessions_updated_at BEFORE UPDATE ON sessions FOR EACH ROW EXECUTE FUNCTION update_updated_at();
