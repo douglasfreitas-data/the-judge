@@ -65,8 +65,10 @@
 - ADR-004: pgvector para armazenamento de embeddings
 
 ### Próximos passos
-- [ ] Criar script Python para testar conexão
-- [ ] Inserir primeiros dados de teste
+- [x] Configurar Supabase
+- [x] Criar schema do banco de dados
+- [x] Testar conexão Python → Supabase (Sucesso!)
+- [ ] Inserir primeiros dados de teste (Automático via script)
 - [ ] Implementar core de embeddings (CLIP)
 
 ---

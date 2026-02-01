@@ -59,7 +59,7 @@ def test_read_categories(supabase: Client):
 def setup_auth(supabase: Client):
     """Cria um usuário de teste e retorna o cliente autenticado."""
     print("\n🔑 Configurando autenticação...")
-    email = "test_user@thejudge.dev"
+    email = "test@example.com"
     password = "password123456"
     
     try:
