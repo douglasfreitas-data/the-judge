@@ -271,7 +271,96 @@ SAÍDA
 
 ---
 
-## 8. Próximos Passos
+## 8. Sistema de Scoring por Visualizador
+
+### 8.1 Conceito
+Cada visualizador terá um **perfil de performance** que evolui ao longo do tempo, permitindo:
+- Ponderar predições baseado no histórico de acertos
+- Identificar visualizadores com "displacement" recorrente
+- Criar "equipes" otimizadas para tipos específicos de alvos
+
+### 8.2 Métricas Propostas
+
+| Métrica | Descrição | Cálculo |
+|---------|-----------|---------|
+| **Hit Rate** | Taxa de acerto geral | Acertos / Total de sessões |
+| **Confidence Calibration** | Precisão vs. confiança declarada | Correlação entre score e acerto real |
+| **Displacement Rate** | Taxa de "acerto invertido" | Sessões que acertaram o alvo errado |
+| **Specialty Score** | Afinidade com tipos de alvos | Performance por categoria (natureza, urbano, abstrato, etc.) |
+| **Recency Weight** | Peso das sessões recentes | Decaimento exponencial para sessões antigas |
+| **Streak Bonus** | Momentum atual | Sequência de acertos/erros recentes |
+
+### 8.3 Perfil do Visualizador
+
+```json
+{
+  "viewer_id": "uuid",
+  "username": "viewer_001",
+  "stats": {
+    "total_sessions": 47,
+    "hit_rate": 0.62,
+    "displacement_rate": 0.15,
+    "avg_confidence": 0.71,
+    "calibration_score": 0.83
+  },
+  "specialties": {
+    "nature": { "sessions": 15, "hit_rate": 0.80 },
+    "urban": { "sessions": 12, "hit_rate": 0.50 },
+    "abstract": { "sessions": 10, "hit_rate": 0.40 },
+    "people": { "sessions": 10, "hit_rate": 0.70 }
+  },
+  "current_streak": 3,
+  "weight_multiplier": 1.24
+}
+```
+
+### 8.4 Ponderação em Crowdsourcing
+
+Quando múltiplos visualizadores participam do mesmo evento:
+
+```
+Predição Final = Σ (Predição_i × Peso_i) / Σ Peso_i
+
+Onde:
+  Peso_i = Hit_Rate_i × Recency_Factor_i × Specialty_Bonus_i
+```
+
+**Exemplo:**
+| Visualizador | Predição | Hit Rate | Specialty Bonus | Peso Final |
+|--------------|----------|----------|-----------------|------------|
+| Alice | Alvo A (85%) | 0.70 | 1.2 (natureza) | 0.84 |
+| Bob | Alvo B (72%) | 0.55 | 1.0 | 0.55 |
+| Carol | Alvo A (68%) | 0.80 | 0.9 | 0.72 |
+
+**Resultado:** Alvo A com peso combinado maior → Predição: Alvo A
+
+### 8.5 Detecção de Padrões
+
+**Displacement Automático:**
+Se um visualizador tem displacement_rate > 40%, considerar:
+- Inverter automaticamente suas predições
+- Alertar para revisão do protocolo de feedback
+
+**Declínio de Performance:**
+- Detectar queda de hit_rate nas últimas N sessões
+- Sugerir pausa ou retreinamento
+
+**Especialização:**
+- Direcionar tipos específicos de alvos para visualizadores especializados
+- Ex: Alvos de natureza → visualizadores com specialty score alto em "nature"
+
+### 8.6 Gamificação (Futuro)
+
+| Elemento | Descrição |
+|----------|-----------|
+| **Ranking Global** | Leaderboard de visualizadores |
+| **Badges** | Conquistas por milestones (50 sessões, 70% hit rate, etc.) |
+| **Seasons** | Competições periódicas |
+| **XP System** | Pontos de experiência por participação |
+
+---
+
+## 9. Próximos Passos
 
 1. [ ] **Prova de Conceito**: Testar CLIP + texto em cenário ARV simples
 2. [ ] **Integrar Sketchformer**: Adicionar processamento de esboços
@@ -281,7 +370,7 @@ SAÍDA
 
 ---
 
-## 9. Referências
+## 10. Referências
 
 ### Artigos e Pesquisas
 - [Sketchformer: Transformer-Based Representation for Sketched Structure (CVPR 2020)](https://openaccess.thecvf.com/content_CVPR_2020/papers/Ribeiro_Sketchformer_Transformer-Based_Representation_for_Sketched_Structure_CVPR_2020_paper.pdf)
