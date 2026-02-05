@@ -237,6 +237,7 @@ BEGIN
     DROP POLICY IF EXISTS "Anyone can view active events" ON events;
     DROP POLICY IF EXISTS "Anyone can view active targets" ON targets;
     DROP POLICY IF EXISTS "Authenticated users can insert targets" ON targets;
+    DROP POLICY IF EXISTS "Authenticated users can update targets" ON targets;
 END $$;
 
 -- Recriar policies
@@ -253,6 +254,7 @@ CREATE POLICY "Viewers can update own sessions" ON sessions FOR UPDATE USING (au
 CREATE POLICY "Anyone can view active events" ON events FOR SELECT USING (is_active = true);
 CREATE POLICY "Anyone can view active targets" ON targets FOR SELECT USING (is_active = true);
 CREATE POLICY "Authenticated users can insert targets" ON targets FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Authenticated users can update targets" ON targets FOR UPDATE TO authenticated USING (true);
 
 -- ============================================
 -- 10. TRIGGERS

@@ -2,7 +2,7 @@
 
 > **Versão:** 1.0  
 > **Data:** 2026-02-01  
-> **Status:** Em planejamento
+> **Status:** Em desenvolvimento (Fase 1 completada)
 
 ---
 
@@ -43,13 +43,13 @@ the-judge/
 
 ### 1.2 Componentes MVP
 
-| Componente | Descrição | Prioridade |
-|------------|-----------|------------|
-| **CLIP Embeddings** | Gerar vetores de texto e imagem | P0 |
-| **Similarity Engine** | Calcular distância de cosseno | P0 |
-| **Session Input** | Receber texto descritivo | P0 |
-| **Target Management** | Cadastrar pares de alvos | P0 |
-| **Basic Judge** | Comparar sessão vs. alvos | P0 |
+| Componente | Descrição | Status |
+|------------|-----------|--------|
+| **CLIP Embeddings** | Gerar vetores de texto e imagem | ✅ Feito |
+| **Similarity Engine** | Calcular distância de cosseno | ✅ Feito |
+| **Session Input** | Receber texto descritivo | ✅ Feito (API) |
+| **Target Management** | Cadastrar pares de alvos | ✅ Feito (Supabase) |
+| **Basic Judge** | Comparar sessão vs. alvos | ✅ Feito |
 
 ### 1.3 Tecnologias MVP
 
@@ -217,11 +217,9 @@ gantt
 
 ## Próximo Passo
 
-**Iniciar Fase 1**: Setup do projeto Python com CLIP embeddings básico.
+**Iniciar Fase 2**: Desenvolvimento do Frontend (Next.js) e integração com a API existente.
 
 ```bash
-# Comandos iniciais
-cd ~/Documentos/Projects/The\ Judge
-mkdir -p src/core src/models src/api tests data/targets
-touch src/__init__.py src/core/__init__.py src/models/__init__.py src/api/__init__.py
+# Comandos sugeridos
+npx create-next-app@latest frontend
 ```
